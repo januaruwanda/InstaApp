@@ -17,7 +17,6 @@ class PostController extends Controller
         // dd($posts);
 
         // $posts = Post::paginate(8);
-        // $hitung = count(Katalogbonsai::where('status','!=',0)->get());
         return view('index', compact('posts'));
     }
 
