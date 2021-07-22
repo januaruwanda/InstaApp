@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
 <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
 
 <style>
@@ -38,8 +39,8 @@
             </a>
 
         </div>
-        <div class="logout float-right">
-            <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
+        <div class="logout" style="text-align:right; margin-right:3px;">
+            <a href="{{ route('logout') }}" onclick="event.preventDefault();
                     document.getElementById('logout-form').submit();">
                 {{ __('Logout') }}
             </a>
@@ -49,6 +50,21 @@
             </form>
         </div>
         @endauth
+    </div>
+    @else
+    <div class="w3-top">
+        
+        <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
+            <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
+            <a href="#" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>Logo</a>
+
+            <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="My Account">
+                <img src="/images/user.jpg" class="w3-circle" style="height:23px;width:23px" alt="Avatar">
+                Guest
+            </a>
+
+        </div>
+
     </div>
     @endif
 
@@ -120,7 +136,10 @@
                 <!-- Upload Postingan -->
 
                 <div class="w3-container">
+                @if (Route::has('login'))
                     <button onclick="document.getElementById('id01').style.display='block'" class="w3-button w3-green w3-large">Post something</button>
+
+                @endif
 
                     <div id="id01" class="w3-modal">
                         <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
@@ -159,15 +178,26 @@
                             <img src="{{ asset('images/'.$p->gambar) }}" style="width:100%" alt="Nature" class="w3-margin-bottom">
                         </div>
                     </div>
-
-                    <button type="button" class="w3-button w3-theme-d1 w3-margin-bottom">
-                        <i class="fa fa-thumbs-up"></i>  Like
+                    @if($p->like == 1)
+                    <button id="unlike" type="button" class="w3-button w3-theme-d1 w3-margin-bottom">
+                        <input type="hidden" name="unlike-post" value="{{ $p->id }}">
+                        <i class="fa fa-thumbs-down"></i>  Unlike
                     </button>
-
+                    @else
+                    <button id="like" type="button" class="w3-button w3-theme-d1 w3-margin-bottom">
+                        <input type="hidden" name="like-post" value="{{ $p->id }}">
+                        <i class="fa fa-thumbs-up"></i>  Like
+                    </button>
+                    @endif
 
                     <button class="w3-button w3-theme-d2 w3-margin-bottom" type="button" data-bs-toggle="collapse" data-bs-target="#view-comments-{{ $p->id }}" aria-expanded="false" aria-controls="collapseExample">
                         <i class="fa fa-comment"></i>  Comment
                     </button>
+                    @if($p->flag == 0)
+                    <p>{{ $p->flag }} <span>Like</span</p>
+                    @else
+                    <p>{{ $p->flag }} <span>Likes</span</p>
+                    @endif
                 </div>
 
                 <div class="w3-container w3-card w3-white w3-round w3-margin panel-footer clearfix">
@@ -225,6 +255,39 @@
 
 
     <script>
+
+        $('#like').on('click', function(){
+            var url = '{{ url("like") }}';
+            var id = $('input[name=like-post]').val();
+                $.ajax({
+                method: "POST",
+                url: url + '/' + id,
+                data: { 
+                    "_token": "{{ csrf_token() }}",
+                    id : id 
+                },
+                success: function(data){
+                console.log(data);
+            }
+            })
+        });
+
+        $('#unlike').on('click', function(){
+            var url = '{{ url("unlike") }}';
+            var id = $('input[name=unlike-post]').val();
+                $.ajax({
+                method: "POST",
+                url: url + '/' + id,
+                data: { 
+                    "_token": "{{ csrf_token() }}",
+                    id : id 
+                },
+                success: function(data){
+                console.log(data);
+            }
+            })
+        });
+
         // Accordion
         function myFunction(id) {
             var x = document.getElementById(id);

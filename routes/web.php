@@ -10,12 +10,13 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/', 'PostController@index')->name('post');
 Route::group(['middleware' => 'auth'], function () {
-
-    Route::get('/', 'PostController@index')->name('post');
-    Route::post('/create', 'PostController@createPost')->name('create');
-
     Route::get('/home', 'HomeController@index')->name('home');
+
+    Route::post('/create', 'PostController@createPost')->name('create');
+    Route::post('/like/{id}', 'PostController@likePost')->name('like');
+    Route::post('/unlike/{id}', 'PostController@unlikePost')->name('unlike');
     
 });
 
